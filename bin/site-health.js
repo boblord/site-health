@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // site-health command line.
 //
-//   site-health check <url>   [--exceptions file.yml] [--md out.md] [--json out.json] [--sample N] [--skip IDS] [--enforce] [--issue]
+//   site-health check <url>   [--repo owner/name] [--exceptions file.yml] [--md out.md] [--json out.json] [--sample N] [--skip IDS] [--enforce] [--issue]
 //   site-health run           [--config sites.yml] [--md out.md] [--json out.json] [--sample N] [--skip IDS] [--issues]
 //   site-health repo [dir]    [--md out.md] [--json out.json] [--enforce]
 //
 // --enforce   exit 1 when a required check fails (for blocking pull requests)
 // --issue(s)  open, update, or close a GitHub issue per site (needs GITHUB_TOKEN)
+// --repo      also check the site's repository for pull requests left open (PR-1);
+//             `run` reads `repo` from sites.yml or SITE_HEALTH_REPOS
 
 import { readFileSync, writeFileSync, appendFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
@@ -15,12 +17,14 @@ import { checkLive } from '../src/live.js';
 import { checkRepo } from '../src/repo.js';
 import { score, toMarkdown, headline } from '../src/report.js';
 import { syncIssues } from '../src/issues.js';
+import { checkPulls, repoFor } from '../src/pulls.js';
 
 const { positionals, values: opt } = parseArgs({
   allowPositionals: true,
   options: {
     config: { type: 'string', default: 'sites.yml' },
     exceptions: { type: 'string' },
+    repo: { type: 'string' },
     md: { type: 'string' },
     json: { type: 'string' },
     sample: { type: 'string', default: '100' },
@@ -37,7 +41,7 @@ const skip = opt.skip.split(',').map((s) => s.trim()).filter(Boolean);
 const sample = Math.max(1, Number(opt.sample) || 100);
 
 function usage(code) {
-  console.log(readFileSync(new URL(import.meta.url), 'utf8').split('\n').slice(1, 11).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
+  console.log(readFileSync(new URL(import.meta.url), 'utf8').split('\n').slice(1, 12).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
   process.exit(code);
 }
 
@@ -53,8 +57,9 @@ function output(reports) {
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown + '\n');
 }
 
-async function liveReport(url, exceptions) {
+async function liveReport(url, exceptions, repo) {
   const raw = await checkLive(url, { sample, skip });
+  if (repo) raw.push(skip.includes('PR-1') ? { id: 'PR-1', status: 'skip', message: 'Skipped by request.' } : await checkPulls(repo));
   const scored = score(raw, exceptions);
   const name = new URL(url).hostname;
   return { name, scored, markdown: toMarkdown(name, scored) };
@@ -66,7 +71,7 @@ async function main() {
   if (command === 'check') {
     if (!target) usage(1);
     const exceptions = opt.exceptions ? loadYaml(opt.exceptions).exceptions ?? [] : [];
-    const report = await liveReport(target, exceptions);
+    const report = await liveReport(target, exceptions, opt.repo);
     output([report]);
     if (opt.issue) await syncIssues([report]);
     process.exit(opt.enforce && report.scored.outcome === 'fail' ? 1 : 0);
@@ -77,7 +82,7 @@ async function main() {
     const reports = [];
     for (const site of config.sites ?? []) {
       console.error(`Checking ${site.url} ...`);
-      reports.push(await liveReport(site.url, site.exceptions ?? []));
+      reports.push(await liveReport(site.url, site.exceptions ?? [], repoFor(site)));
     }
     output(reports);
     if (opt.issues) await syncIssues(reports);
