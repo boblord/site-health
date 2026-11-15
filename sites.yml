@@ -1,0 +1,16 @@
+# Sites checked every week by .github/workflows/weekly.yml. Each site's results
+# go to one issue in this repository, which is public.
+#
+# Only list a site here if you are happy for it to be publicly associated with
+# this repository. A site can instead run the same checks privately from its
+# own repository (see docs/adopting.md).
+#
+# Fields:
+#   url         the site's main address (the checker follows redirects from it)
+#   exceptions  rules this site is excused from, each with a reason and an
+#               optional expiry date (YYYY-MM-DD)
+standards: 1
+sites:
+  - url: https://securebydesign.software
+  - url: https://www.hacklore.org
+  - url: https://www.ilord.com

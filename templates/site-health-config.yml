@@ -1,0 +1,6 @@
+# Copy to .site-health.yml at the root of a site repository (optional).
+# Rules this site is excused from. Each needs a reason; `until` is optional.
+exceptions: []
+#  - rule: DNS-3
+#    reason: Waiting on the registrar to support CAA records.
+#    until: 2027-03-01

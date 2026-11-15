@@ -1,0 +1,69 @@
+# Reusable workflow for site repositories. See docs/adopting.md and
+# templates/site-health.yml for how to call it.
+#
+# - Repository checks (DEP-*) run on every call.
+# - Live checks run when `url` is set and the event is not a pull request
+#   (a pull request does not change the live site).
+# - With `open-issue: true`, scheduled and manual runs keep one issue in the
+#   calling repository up to date. The caller must grant `issues: write`.
+# - Exceptions are read from .site-health.yml in the calling repository.
+name: Site health (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      url:
+        description: The live site's main address. Leave empty to skip live checks.
+        type: string
+        default: ''
+      enforce:
+        description: Fail the job when a required check fails.
+        type: boolean
+        default: false
+      open-issue:
+        description: Keep an issue in this repository in step with live results.
+        type: boolean
+        default: false
+      site-health-repo:
+        description: Where to get the checker (change if you use a fork).
+        type: string
+        default: boblord/site-health
+      site-health-ref:
+        description: Which version of the checker and standards to use.
+        type: string
+        default: v1
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: site
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ${{ inputs.site-health-repo }}
+          ref: ${{ inputs.site-health-ref }}
+          path: .site-health
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci --prefix .site-health --omit=dev
+      - name: Repository checks
+        env:
+          ENFORCE: ${{ inputs.enforce && '--enforce' || '' }}
+        run: node .site-health/bin/site-health.js repo site $ENFORCE
+      - name: Live checks
+        if: inputs.url != '' && github.event_name != 'pull_request'
+        env:
+          URL: ${{ inputs.url }}
+          ENFORCE: ${{ inputs.enforce && '--enforce' || '' }}
+          ISSUE: ${{ inputs.open-issue && '--issue' || '' }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          EXCEPTIONS=""
+          if [ -f site/.site-health.yml ]; then EXCEPTIONS="--exceptions site/.site-health.yml"; fi
+          node .site-health/bin/site-health.js check "$URL" $EXCEPTIONS $ENFORCE $ISSUE

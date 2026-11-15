@@ -1,0 +1,27 @@
+name: Weekly site check
+
+on:
+  schedule:
+    - cron: '17 9 * * 1' # Mondays, 09:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Opens, updates, or closes one issue per site. Site failures do not fail
+      # the workflow; the issues are the report.
+      - run: node bin/site-health.js run --config sites.yml --issues
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

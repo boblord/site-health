@@ -1,0 +1,22 @@
+{
+  "name": "site-health",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Website standards and an automated checker for them.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "bin": {
+    "site-health": "bin/site-health.js"
+  },
+  "scripts": {
+    "check": "node bin/site-health.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "yaml": "^2.9.1"
+  }
+}
