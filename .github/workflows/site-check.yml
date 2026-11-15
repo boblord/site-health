@@ -7,8 +7,9 @@
 # - With `open-issue: true`, scheduled and manual runs keep one issue in the
 #   calling repository up to date. The caller must grant `issues: write`.
 # - Exceptions are read from .site-health.yml in the calling repository.
-# - Live checks also check the calling repository for pull requests left open
-#   (UPKEEP-1). The caller must grant `pull-requests: read`; without it UPKEEP-1 is skipped.
+# - Live checks also run the upkeep checks on the calling repository (UPKEEP-1 to
+#   UPKEEP-3). The caller grants `pull-requests: read` and `actions: read`; a rule
+#   whose permission is missing is skipped.
 name: Site health (reusable)
 
 on:

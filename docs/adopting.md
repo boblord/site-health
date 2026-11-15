@@ -23,12 +23,12 @@ In the site's repository:
 
 The workflow starts in warning mode (`enforce: false`). Once the site passes, set `enforce: true` and make the check required in the repository's branch protection settings, so a pull request cannot merge if it breaks a required rule.
 
-## Pull requests left open (UPKEEP-1)
+## Repository upkeep (UPKEEP-1 to UPKEEP-3)
 
-UPKEEP-1 warns when a pull request in the site's repository has been open more than 14 days. It reports only a count and the age of the oldest, never titles.
+These rules warn when a pull request has been open more than 14 days (UPKEEP-1), when Dependabot has stopped running or is failing (UPKEEP-2), and when a branch has sat idle for more than 30 days without a pull request (UPKEEP-3). They report counts and ages only, never titles or branch names.
 
-- **Checked from the site's own repository:** nothing to set up beyond the `pull-requests: read` permission in the template.
-- **Public, central:** name the repository for each site. For a public repository, add `repo: owner/name` to the site in `sites.yml`. For a private repository, keep its name out of this public repository: add a secret `SITE_HEALTH_REPOS` holding JSON such as `{"example.org": "owner/example-site"}` (a secret, not a variable: GitHub prints variables in public run logs), and a secret `SITE_HEALTH_PULLS_TOKEN` holding a fine-grained token with read-only "Pull requests" access to those repositories.
+- **Checked from the site's own repository:** nothing to set up beyond the `pull-requests: read` and `actions: read` permissions in the template.
+- **Public, central:** name the repository for each site. For a public repository, add `repo: owner/name` to the site in `sites.yml`. For a private repository, keep its name out of this public repository: add a secret `SITE_HEALTH_REPOS` holding JSON such as `{"example.org": "owner/example-site"}` (a secret, not a variable: GitHub prints variables in public run logs), and a secret `SITE_HEALTH_PULLS_TOKEN` holding a fine-grained token for those repositories with read-only "Pull requests" (UPKEEP-1), "Actions" (UPKEEP-2) and "Contents" (UPKEEP-3) access. Leave out a permission to skip that rule; "Contents" also lets the token read the repositories' files.
 
 ## Exceptions
 
