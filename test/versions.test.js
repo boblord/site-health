@@ -12,7 +12,7 @@ const files = [
   ...readdirSync(new URL('templates/', root)).map((f) => `templates/${f}`),
   '.github/workflows/site-check.yml',
 ];
-const PATTERNS = [/site-health#v(\d+)/g, /site-check\.yml@v(\d+)/g, /site-health-ref[\s\S]{0,200}?default: v(\d+)/g];
+const PATTERNS = [/site-health#v(\d+)/g, /site-check\.yml@v(\d+)/g, /site-health-ref[\s\S]{0,200}?default: v(\d+)/g, /repository: boblord\/site-health\s+ref: v(\d+)/g];
 
 test(`docs and templates name tag v${STANDARDS_VERSION}`, () => {
   let found = 0;

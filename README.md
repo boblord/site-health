@@ -8,9 +8,9 @@ The checker looks at a site from the outside, the way any visitor or scanner doe
 
 ## How it runs
 
-- **Weekly, for the sites in [sites.yml](sites.yml):** [.github/workflows/weekly.yml](.github/workflows/weekly.yml) checks every listed site and keeps one issue per site in this repository up to date. It comments when the list of problems changes, so GitHub notifies the owner, and closes the issue when everything passes.
+- **Weekly, from a private repository of your own:** list your sites in a `sites.yml` there and add [templates/central-weekly.yml](templates/central-weekly.yml). It checks every listed site and keeps one issue per site in that repository up to date. It comments when the list of problems changes, so GitHub notifies you, and closes the issue when everything passes. The list and the results stay private; this repository names no sites.
 - **On pull requests, in each site's repository:** the reusable workflow [.github/workflows/site-check.yml](.github/workflows/site-check.yml) runs the repository checks (dependency vulnerabilities, lockfile, Dependabot). It starts in warning mode and can be switched to block merges once a site passes.
-- **Privately, from a site's own repository:** a site that should not appear in the public list can run the weekly live check from its own (private) repository instead. Its results stay there.
+- **Or from a site's own repository:** a single site can run the weekly live check from its own repository instead, with results there.
 
 [docs/adopting.md](docs/adopting.md) explains how to connect a site.
 
@@ -27,7 +27,7 @@ Or from a clone:
 ```sh
 npm ci
 node bin/site-health.js check https://example.org          # one live site
-node bin/site-health.js run --config sites.yml             # every site in the list
+node bin/site-health.js run --config sites.yml             # every site in a list (see templates/sites.yml)
 node bin/site-health.js repo path/to/site-repo             # repository checks
 ```
 

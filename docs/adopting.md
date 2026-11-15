@@ -9,8 +9,8 @@ There are two parts, and a site can use either or both:
 
 Choose one:
 
-- **Public, central:** add the site to [sites.yml](../sites.yml) in this repository. It is checked every Monday and gets one public issue here. Use this only for sites you are happy to associate publicly with this repository.
-- **Private, from the site's own repository:** do not add it to `sites.yml`. Instead, in step 2, uncomment the `schedule:` lines in the workflow. The weekly check then runs in the site's repository, and its issue stays there. If the repository is private, nobody else sees the results or the connection between the site and this project.
+- **Central, private (for several sites):** create a private repository of your own. Copy [templates/sites.yml](../templates/sites.yml) to `sites.yml` there and list your sites, and copy [templates/central-weekly.yml](../templates/central-weekly.yml) to `.github/workflows/weekly.yml`. Every Monday it checks each site and keeps one issue per site in that repository. Adding a site is one entry in `sites.yml`. Because the repository is private, nobody else sees the list of sites or the results.
+- **From the site's own repository (for one site):** in step 2, uncomment the `schedule:` lines in the workflow. The weekly check then runs in the site's repository, and its issue stays there.
 
 ## 2. Repository checks
 
@@ -28,11 +28,11 @@ The workflow starts in warning mode (`enforce: false`). Once the site passes, se
 These rules warn when a pull request has been open more than 14 days (UPKEEP-1), when Dependabot has stopped running or is failing (UPKEEP-2), and when a branch has sat idle for more than 30 days without a pull request (UPKEEP-3). They report counts and ages only, never titles or branch names.
 
 - **Checked from the site's own repository:** nothing to set up beyond the `pull-requests: read` and `actions: read` permissions in the template.
-- **Public, central:** name the repository for each site. For a public repository, add `repo: owner/name` to the site in `sites.yml`. For a private repository, keep its name out of this public repository: add a secret `SITE_HEALTH_REPOS` holding JSON such as `{"example.org": "owner/example-site"}` (a secret, not a variable: GitHub prints variables in public run logs), and a secret `SITE_HEALTH_PULLS_TOKEN` holding a fine-grained token for those repositories with read-only "Pull requests" (UPKEEP-1), "Actions" (UPKEEP-2) and "Contents" (UPKEEP-3) access. Leave out a permission to skip that rule; "Contents" also lets the token read the repositories' files.
+- **Central, private:** add `repo: owner/name` to each site in your `sites.yml`, and add a secret `SITE_HEALTH_PULLS_TOKEN` to your private repository holding a fine-grained token for the site repositories with read-only "Pull requests" (UPKEEP-1), "Actions" (UPKEEP-2) and "Contents" (UPKEEP-3) access. Leave out a permission to skip that rule; "Contents" also lets the token read the repositories' files. (If your list must live in a public repository, the checker can instead read the repositories from a `SITE_HEALTH_REPOS` secret holding JSON such as `{"example.org": "owner/example-site"}`.)
 
 ## Exceptions
 
-When a rule cannot or should not apply to a site, record why instead of leaving it red. For a site in `sites.yml`, add it there:
+When a rule cannot or should not apply to a site, record why instead of leaving it red. For a site in your central `sites.yml`, add it there:
 
 ```yaml
   - url: https://example.org
