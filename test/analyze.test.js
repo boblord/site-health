@@ -106,3 +106,15 @@ test('TXT unquoting', () => {
   assert.equal(unquoteTxt('"v=spf1 " "-all"'), 'v=spf1 -all');
   assert.equal(unquoteTxt('v=spf1 -all'), 'v=spf1 -all');
 });
+
+test('PR-1 open pull requests', () => {
+  const now = new Date('2026-11-15T12:00:00Z');
+  const ago = (d) => ({ created_at: new Date(now - d * 86_400_000).toISOString(), title: 'Secret plans' });
+  assert.equal(status(a.judgeOpenPulls([], now)), 'pass');
+  assert.equal(status(a.judgeOpenPulls([ago(3), ago(14)], now)), 'pass', '14 days is still fine');
+  const stale = a.judgeOpenPulls([ago(2), ago(19), ago(30)], now);
+  assert.equal(stale.status, 'fail');
+  assert.match(stale.message, /^3 open pull requests; the oldest is 30 days old\. 2 have been open longer than 14 days/);
+  assert.doesNotMatch(stale.message, /Secret/, 'never reveals titles');
+  assert.match(a.judgeOpenPulls([ago(1)], now).message, /^1 open pull request; the oldest is 1 day old\.$/);
+});

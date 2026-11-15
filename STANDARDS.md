@@ -293,6 +293,20 @@ Required. Passes when `.github/dependabot.yml` (or a Renovate config) exists.
 
 **Source:** [GitHub: Dependabot version updates](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates)
 
+## Upkeep
+
+This rule runs with the weekly live check when the site's repository is named in the configuration (see [docs/adopting.md](docs/adopting.md)). Without that, it is left out of the report.
+
+### PR-1 No pull request open longer than 14 days
+
+Recommended. Passes when no pull request in the site's repository has been open for more than 14 days. Reports count only how many pull requests are open and how old the oldest is, never their titles, so a public report does not reveal a private repository's work.
+
+**Why:** automated dependency updates only help if someone merges them. A pull request that sits for weeks usually means a security fix that never shipped, or work that was forgotten.
+
+**Fix:** merge, update or close the pull request. To cut the number of dependency pull requests, group Dependabot updates into one per week (see [templates/dependabot.yml](templates/dependabot.yml)).
+
+**Source:** [GitHub: Dependabot version updates](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates)
+
 ## Practices
 
 These are not checked automatically, but they keep sites passing with no manual effort.

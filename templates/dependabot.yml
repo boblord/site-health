@@ -1,10 +1,18 @@
 version: 2
 updates:
+  # One pull request a week per ecosystem, instead of one per package. Fewer
+  # pull requests to review, and no lockfile conflicts between them (PR-1).
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    groups:
+      npm:
+        patterns: ['*']
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      actions:
+        patterns: ['*']

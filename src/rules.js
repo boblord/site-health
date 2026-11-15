@@ -53,6 +53,9 @@ export const RULES = [
   { id: 'DEP-1', title: 'No high or critical dependency vulnerabilities', level: 'required', since: 1, scope: 'repo' },
   { id: 'DEP-2', title: 'Lockfile is committed', level: 'required', since: 1, scope: 'repo' },
   { id: 'DEP-3', title: 'Automated dependency updates are configured', level: 'required', since: 1, scope: 'repo' },
+
+  // Upkeep (checked with the live site when a repository is named for it)
+  { id: 'PR-1', title: 'No pull request open longer than 14 days', level: 'recommended', since: 2, scope: 'upkeep' },
 ];
 
 export const RULES_BY_ID = Object.fromEntries(RULES.map((r) => [r.id, r]));

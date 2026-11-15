@@ -217,3 +217,26 @@ export function sameUrl(a, b) {
     return false;
   }
 }
+
+/** PR-1: pull requests still open after this many days need attention. */
+export const PR_MAX_DAYS = 14;
+
+/**
+ * Judges a repository's open pull requests. Reports only how many there are and
+ * how old the oldest is: never titles, authors or links, because reports can be
+ * public while the repository is private.
+ * @param {Array<{ created_at: string }>} pulls  open pull requests from the GitHub API
+ */
+export function judgeOpenPulls(pulls, now = new Date(), maxDays = PR_MAX_DAYS) {
+  if (!pulls.length) return { status: 'pass', message: 'No open pull requests.' };
+  const ages = pulls.map((p) => Math.floor((now - new Date(p.created_at)) / 86_400_000));
+  const oldest = Math.max(...ages);
+  const stale = ages.filter((d) => d > maxDays).length;
+  const days = (n) => `${n} day${n === 1 ? '' : 's'}`;
+  const count = `${pulls.length} open pull request${pulls.length === 1 ? '' : 's'}; the oldest is ${days(oldest)} old.`;
+  if (!stale) return { status: 'pass', message: count };
+  return {
+    status: 'fail',
+    message: `${count} ${stale === 1 ? 'One has' : `${stale} have`} been open longer than ${days(maxDays)}: merge, update or close ${stale === 1 ? 'it' : 'them'}.`,
+  };
+}

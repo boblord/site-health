@@ -23,6 +23,13 @@ In the site's repository:
 
 The workflow starts in warning mode (`enforce: false`). Once the site passes, set `enforce: true` and make the check required in the repository's branch protection settings, so a pull request cannot merge if it breaks a required rule.
 
+## Pull requests left open (PR-1)
+
+PR-1 warns when a pull request in the site's repository has been open more than 14 days. It reports only a count and the age of the oldest, never titles.
+
+- **Checked from the site's own repository:** nothing to set up beyond the `pull-requests: read` permission in the template.
+- **Public, central:** name the repository for each site. For a public repository, add `repo: owner/name` to the site in `sites.yml`. For a private repository, keep its name out of this public repository: set a repository variable `SITE_HEALTH_REPOS` to JSON such as `{"example.org": "owner/example-site"}`, and add a secret `SITE_HEALTH_PULLS_TOKEN` holding a fine-grained token with read-only "Pull requests" access to those repositories.
+
 ## Exceptions
 
 When a rule cannot or should not apply to a site, record why instead of leaving it red. For a site in `sites.yml`, add it there:

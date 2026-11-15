@@ -7,6 +7,8 @@
 # - With `open-issue: true`, scheduled and manual runs keep one issue in the
 #   calling repository up to date. The caller must grant `issues: write`.
 # - Exceptions are read from .site-health.yml in the calling repository.
+# - Live checks also check the calling repository for pull requests left open
+#   (PR-1). The caller must grant `pull-requests: read`; without it PR-1 is skipped.
 name: Site health (reusable)
 
 on:
@@ -66,4 +68,4 @@ jobs:
         run: |
           EXCEPTIONS=""
           if [ -f site/.site-health.yml ]; then EXCEPTIONS="--exceptions site/.site-health.yml"; fi
-          node .site-health/bin/site-health.js check "$URL" $EXCEPTIONS $ENFORCE $ISSUE
+          node .site-health/bin/site-health.js check "$URL" --repo "$GITHUB_REPOSITORY" $EXCEPTIONS $ENFORCE $ISSUE
