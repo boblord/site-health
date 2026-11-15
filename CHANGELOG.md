@@ -1,5 +1,9 @@
 # Changelog
 
+## Checker changes (2026-11-15)
+
+- This repository no longer lists any sites or runs a weekly check of its own. Keep your list and results in a private repository, using [templates/sites.yml](templates/sites.yml) and [templates/central-weekly.yml](templates/central-weekly.yml). The standards are unchanged.
+
 ## Added to version 2 (2026-11-15)
 
 - **UPKEEP-1** (recommended): no pull request in the site's repository open longer than 14 days. It runs only when a repository is named for the site, so sites without one see no change. First published as PR-1 and renamed the same day, because the id read like a pull request number.

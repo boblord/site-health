@@ -1,0 +1,19 @@
+# Copy to sites.yml in a private repository of your own, next to
+# templates/central-weekly.yml, and list your sites. See docs/adopting.md.
+# The checker and standards come from https://github.com/boblord/site-health.
+# Keep this repository private, so the list and the issues it produces are too.
+#
+# Fields:
+#   url         the site's main address (the checker follows redirects from it)
+#   repo        the site's GitHub repository, for the upkeep checks (UPKEEP-1 to
+#               UPKEEP-3); leave out to skip them
+#   exceptions  rules this site is excused from, each with a reason and an
+#               optional expiry date (YYYY-MM-DD)
+standards: 2
+sites:
+  - url: https://example.org
+    repo: example-owner/example-site
+    # exceptions:
+    #   - rule: HDR-2
+    #     reason: The host does not allow custom headers. Moving hosts in Q2.
+    #     until: 2027-06-30

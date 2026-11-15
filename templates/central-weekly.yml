@@ -1,0 +1,43 @@
+name: Weekly site check
+# Copy to .github/workflows/weekly.yml in a private repository that holds your
+# sites.yml (templates/sites.yml). Results become issues in that repository.
+
+on:
+  schedule:
+    - cron: '17 9 * * 1' # Mondays, 09:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      # The checker and standards, from the public repository. v2 is the
+      # standards version; it moves forward only with fixes and new
+      # recommended rules.
+      - uses: actions/checkout@v7
+        with:
+          repository: boblord/site-health
+          ref: v2
+          path: .site-health
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm ci --prefix .site-health --omit=dev
+      # Opens, updates, or closes one issue per site in this repository. Site
+      # failures do not fail the workflow; the issues are the report.
+      - run: node .site-health/bin/site-health.js run --config sites.yml --issues
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          # Fine-grained token for the site repositories, read-only: Pull requests
+          # (UPKEEP-1), Actions (UPKEEP-2), Contents (UPKEEP-3). Without it, the
+          # upkeep checks are skipped.
+          SITE_HEALTH_PULLS_TOKEN: ${{ secrets.SITE_HEALTH_PULLS_TOKEN }}
