@@ -9,13 +9,27 @@ const fail = (message) => ({ status: 'fail', message });
 const ONE_YEAR = 31_536_000;
 const DAY_MS = 86_400_000;
 
-export function judgeHsts(value) {
+const ONE_WEEK = 604_800;
+
+// HSTS ramp-up (standards version 2). Until this date, sites start with a
+// one-week max-age and leave out includeSubDomains, so a mistake can only lock
+// visitors to HTTPS for a week. From this date, one year is required again.
+export const HSTS_RAMP_END = new Date('2026-12-15T00:00:00Z');
+
+export function judgeHsts(value, now = new Date()) {
   if (!value) return fail('No Strict-Transport-Security header.');
   const maxAge = Number(/max-age\s*=\s*"?(\d+)/i.exec(value)?.[1] ?? NaN);
   if (!Number.isFinite(maxAge)) return fail(`Strict-Transport-Security has no max-age: "${value}".`);
-  if (maxAge < ONE_YEAR) return fail(`max-age is ${maxAge} seconds; it should be at least ${ONE_YEAR} (one year).`);
-  const sub = /includesubdomains/i.test(value) ? ', includes subdomains' : '';
-  return pass(`max-age ${maxAge}${sub}.`);
+  const sub = /includesubdomains/i.test(value);
+  const rampEnd = HSTS_RAMP_END.toISOString().slice(0, 10);
+  if (now < HSTS_RAMP_END) {
+    if (maxAge < ONE_WEEK) return fail(`max-age is ${maxAge} seconds; it should be at least ${ONE_WEEK} (one week) during the ramp-up.`);
+    if (sub) return warn(`max-age ${maxAge}. Leave out includeSubDomains during the ramp-up, which ends ${rampEnd}.`);
+    const note = maxAge < ONE_YEAR ? ` Raise to ${ONE_YEAR} (one year) by ${rampEnd}.` : '';
+    return pass(`max-age ${maxAge}.${note}`);
+  }
+  if (maxAge < ONE_YEAR) return fail(`max-age is ${maxAge} seconds; it should be at least ${ONE_YEAR} (one year). The ramp-up ended ${rampEnd}.`);
+  return pass(`max-age ${maxAge}${sub ? ', includes subdomains' : ''}.`);
 }
 
 /** Parses a CSP header into { directive: [sources] }. First occurrence wins, as in browsers. */

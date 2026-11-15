@@ -13,8 +13,4 @@ standards: 1
 sites:
   - url: https://securebydesign.software
   - url: https://www.hacklore.org
-    exceptions:
-      - rule: HDR-1
-        reason: HSTS is ramping up, starting at one week to confirm nothing breaks before moving to one year.
-        until: 2026-12-15
   - url: https://www.ilord.com

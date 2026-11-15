@@ -8,7 +8,7 @@
 //   info         never passes or fails; reported for awareness
 // since: the standards version that introduced the rule.
 
-export const STANDARDS_VERSION = 1;
+export const STANDARDS_VERSION = 2;
 
 export const RULES = [
   // HTTPS
@@ -17,7 +17,7 @@ export const RULES = [
   { id: 'HTTPS-3', title: 'One canonical host (www or apex)', level: 'recommended', since: 1, scope: 'live' },
 
   // Security headers
-  { id: 'HDR-1', title: 'Strict-Transport-Security for at least a year', level: 'required', since: 1, scope: 'live' },
+  { id: 'HDR-1', title: 'Strict-Transport-Security (ramping up to a year)', level: 'required', since: 1, scope: 'live' },
   { id: 'HDR-2', title: 'Content Security Policy restricts scripts', level: 'required', since: 1, scope: 'live' },
   { id: 'HDR-3', title: 'Framing is restricted', level: 'required', since: 1, scope: 'live' },
   { id: 'HDR-4', title: 'X-Content-Type-Options: nosniff', level: 'required', since: 1, scope: 'live' },

@@ -31,7 +31,7 @@ on:
       site-health-ref:
         description: Which version of the checker and standards to use.
         type: string
-        default: v1
+        default: v2
 
 jobs:
   check:

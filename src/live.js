@@ -76,7 +76,7 @@ export async function checkLive(siteUrl, { sample = 100, skip = [], now = new Da
   });
 
   // Headers (from the home page response)
-  await run('HDR-1', () => judge.judgeHsts(h('strict-transport-security')));
+  await run('HDR-1', () => judge.judgeHsts(h('strict-transport-security'), now));
   await run('HDR-2', () => judge.judgeCsp(h('content-security-policy')));
   await run('HDR-3', () => judge.judgeFraming(h('content-security-policy'), h('x-frame-options')));
   await run('HDR-4', () => judge.judgeNosniff(h('x-content-type-options')));

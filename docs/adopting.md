@@ -45,12 +45,12 @@ Paste this into the site repository's `CLAUDE.md`, so that any work on the site 
 ## Site standards
 
 This site follows the website standards in https://github.com/boblord/site-health
-(STANDARDS.md), version 1. Rule ids such as HDR-2 refer to that file.
+(STANDARDS.md), version 2. Rule ids such as HDR-2 refer to that file.
 
 - Before opening a pull request, run the repository checks:
-  `npx --yes github:boblord/site-health#v1 repo .`
+  `npx --yes github:boblord/site-health#v2 repo .`
 - For changes that affect the published site, also check the deployed preview or
-  production: `npx --yes github:boblord/site-health#v1 check <url>`.
+  production: `npx --yes github:boblord/site-health#v2 check <url>`.
 - When a change touches an area covered by a failing rule, fix that rule in the
   same change if the fix is small, and say in the pull request what remains.
 - Never weaken a passing check to make something else work. If a rule should not

@@ -5,11 +5,21 @@ import { unquoteTxt } from '../src/net.js';
 
 const status = (r) => r.status;
 
-test('HSTS', () => {
-  assert.equal(status(a.judgeHsts(undefined)), 'fail');
-  assert.equal(status(a.judgeHsts('max-age=86400')), 'fail');
-  assert.equal(status(a.judgeHsts('max-age=31536000; includeSubDomains')), 'pass');
-  assert.equal(status(a.judgeHsts('includeSubDomains')), 'fail');
+test('HSTS during the ramp-up', () => {
+  const during = new Date('2026-11-20T00:00:00Z');
+  assert.equal(status(a.judgeHsts(undefined, during)), 'fail');
+  assert.equal(status(a.judgeHsts('max-age=86400', during)), 'fail', 'under a week');
+  assert.equal(status(a.judgeHsts('max-age=604800', during)), 'pass');
+  assert.equal(status(a.judgeHsts('max-age=31536000', during)), 'pass');
+  assert.equal(status(a.judgeHsts('max-age=604800; includeSubDomains', during)), 'warn', 'leave out includeSubDomains');
+  assert.equal(status(a.judgeHsts('includeSubDomains', during)), 'fail', 'no max-age');
+});
+
+test('HSTS after the ramp-up', () => {
+  const after = new Date(a.HSTS_RAMP_END.valueOf() + 1000);
+  assert.equal(status(a.judgeHsts('max-age=604800', after)), 'fail', 'one week is no longer enough');
+  assert.equal(status(a.judgeHsts('max-age=31536000', after)), 'pass');
+  assert.equal(status(a.judgeHsts('max-age=31536000; includeSubDomains', after)), 'pass');
 });
 
 test('CSP', () => {
