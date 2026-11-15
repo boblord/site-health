@@ -15,7 +15,7 @@ jobs:
     permissions:
       contents: read
       issues: write
-      pull-requests: read # PR-1: pull requests left open
+      pull-requests: read # UPKEEP-1: pull requests left open
     with:
       url: https://example.org
       # Start in warning mode. Set to true once the site passes, to block

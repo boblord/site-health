@@ -7,7 +7,7 @@
 //
 // --enforce   exit 1 when a required check fails (for blocking pull requests)
 // --issue(s)  open, update, or close a GitHub issue per site (needs GITHUB_TOKEN)
-// --repo      also check the site's repository for pull requests left open (PR-1);
+// --repo      also check the site's repository for pull requests left open (UPKEEP-1);
 //             `run` reads `repo` from sites.yml or SITE_HEALTH_REPOS
 
 import { readFileSync, writeFileSync, appendFileSync } from 'node:fs';
@@ -59,7 +59,7 @@ function output(reports) {
 
 async function liveReport(url, exceptions, repo) {
   const raw = await checkLive(url, { sample, skip });
-  if (repo) raw.push(skip.includes('PR-1') ? { id: 'PR-1', status: 'skip', message: 'Skipped by request.' } : await checkPulls(repo));
+  if (repo) raw.push(skip.includes('UPKEEP-1') ? { id: 'UPKEEP-1', status: 'skip', message: 'Skipped by request.' } : await checkPulls(repo));
   const scored = score(raw, exceptions);
   const name = new URL(url).hostname;
   return { name, scored, markdown: toMarkdown(name, scored) };

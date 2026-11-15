@@ -17,7 +17,7 @@ test('repoFor reads sites.yml first, then SITE_HEALTH_REPOS', () => {
 test('checkPulls judges the open pull requests', async () => {
   respond(200, [{ created_at: '2026-10-01T00:00:00Z' }]);
   const r = await checkPulls('o/a', { now: new Date('2026-11-15T00:00:00Z'), env: { GITHUB_TOKEN: 't' } });
-  assert.equal(r.id, 'PR-1');
+  assert.equal(r.id, 'UPKEEP-1');
   assert.equal(r.status, 'fail');
 });
 

@@ -8,7 +8,7 @@
 #   calling repository up to date. The caller must grant `issues: write`.
 # - Exceptions are read from .site-health.yml in the calling repository.
 # - Live checks also check the calling repository for pull requests left open
-#   (PR-1). The caller must grant `pull-requests: read`; without it PR-1 is skipped.
+#   (UPKEEP-1). The caller must grant `pull-requests: read`; without it UPKEEP-1 is skipped.
 name: Site health (reusable)
 
 on:

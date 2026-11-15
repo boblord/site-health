@@ -1,7 +1,7 @@
 version: 2
 updates:
   # One pull request a week per ecosystem, instead of one per package. Fewer
-  # pull requests to review, and no lockfile conflicts between them (PR-1).
+  # pull requests to review, and no lockfile conflicts between them (UPKEEP-1).
   - package-ecosystem: npm
     directory: /
     schedule:
