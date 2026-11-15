@@ -295,7 +295,7 @@ Required. Passes when `.github/dependabot.yml` (or a Renovate config) exists.
 
 ## Upkeep
 
-This rule runs with the weekly live check when the site's repository is named in the configuration (see [docs/adopting.md](docs/adopting.md)). Without that, it is left out of the report.
+These rules run with the weekly live check when the site's repository is named in the configuration (see [docs/adopting.md](docs/adopting.md)). Without that, they are left out of the report. They report counts and ages only, never the names of pull requests or branches, so a public report does not reveal a private repository's work. Each needs one read-only permission on the token; without it, that rule is skipped.
 
 ### UPKEEP-1 No pull request open longer than 14 days
 
@@ -306,6 +306,26 @@ Recommended. Passes when no pull request in the site's repository has been open 
 **Fix:** merge, update or close the pull request. To cut the number of dependency pull requests, group Dependabot updates into one per week (see [templates/dependabot.yml](templates/dependabot.yml)).
 
 **Source:** [GitHub: Dependabot version updates](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates)
+
+### UPKEEP-2 Dependabot runs every week and succeeds
+
+Recommended. Passes when Dependabot's update jobs have run in the last 14 days and the latest run for each package ecosystem (for example npm and GitHub Actions) did not fail. Needs read-only "Actions" access.
+
+**Why:** DEP-3 only checks that `.github/dependabot.yml` exists. Dependabot can still stop working without anyone noticing: a mistake in the file, a private registry it cannot reach, or Dependabot turned off in the repository settings. Then security fixes stop arriving.
+
+**Fix:** open the repository's Insights, then Dependency graph, then Dependabot, and read the error on the failing ecosystem. Check that Dependabot version updates are enabled under Settings, then Code security.
+
+**Source:** [GitHub: Viewing Dependabot job logs](https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/viewing-dependabot-job-logs)
+
+### UPKEEP-3 No branch idle for more than 30 days without a pull request
+
+Recommended. Passes when every branch other than the default branch either has an open pull request or has had a commit in the last 30 days. Needs read-only "Contents" access, which also lets the token read the repository's files.
+
+**Why:** a branch nobody is working on and nobody has proposed for merging is usually abandoned work, or a leftover after a merge. Old branches make it harder to see what is in progress, and can hold forgotten changes.
+
+**Fix:** merge the branch, open a pull request for it, or delete it. Turn on "Automatically delete head branches" in the repository settings so merged branches clean themselves up.
+
+**Source:** [GitHub: Managing the automatic deletion of branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches)
 
 ## Practices
 

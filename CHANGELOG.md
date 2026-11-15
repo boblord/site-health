@@ -3,6 +3,8 @@
 ## Added to version 2 (2026-11-15)
 
 - **UPKEEP-1** (recommended): no pull request in the site's repository open longer than 14 days. It runs only when a repository is named for the site, so sites without one see no change. First published as PR-1 and renamed the same day, because the id read like a pull request number.
+- **UPKEEP-2** (recommended): Dependabot has run in the last 14 days and its latest run for each ecosystem succeeded.
+- **UPKEEP-3** (recommended): no branch other than the default branch idle for more than 30 days without an open pull request.
 
 ## Standards version 2 (2026-11-15)
 

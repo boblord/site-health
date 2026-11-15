@@ -118,3 +118,27 @@ test('UPKEEP-1 open pull requests', () => {
   assert.doesNotMatch(stale.message, /Secret/, 'never reveals titles');
   assert.match(a.judgeOpenPulls([ago(1)], now).message, /^1 open pull request; the oldest is 1 day old\.$/);
 });
+
+test('UPKEEP-2 Dependabot runs', () => {
+  const now = new Date('2026-11-15T12:00:00Z');
+  const run = (eco, d, conclusion = 'success') => ({ name: `${eco} in /. - Update #1`, status: 'completed', conclusion, created_at: new Date(now - d * 86_400_000).toISOString() });
+  assert.equal(status(a.judgeDependabotRuns([], now)), 'fail', 'never ran');
+  assert.equal(status(a.judgeDependabotRuns([run('npm_and_yarn', 3), run('github_actions', 3)], now)), 'pass');
+  assert.match(a.judgeDependabotRuns([run('npm_and_yarn', 20)], now).message, /last ran 20 days ago/);
+  assert.equal(status(a.judgeDependabotRuns([run('npm_and_yarn', 20)], now)), 'fail', 'too long ago');
+  const broken = a.judgeDependabotRuns([run('npm_and_yarn', 1, 'failure'), run('npm_and_yarn', 8), run('github_actions', 1)], now);
+  assert.equal(broken.status, 'fail', 'the latest npm run failed');
+  assert.match(broken.message, /latest npm_and_yarn update failed/);
+  assert.equal(status(a.judgeDependabotRuns([run('npm_and_yarn', 1), run('npm_and_yarn', 8, 'failure')], now)), 'pass', 'an older failure was fixed');
+});
+
+test('UPKEEP-3 idle branches', () => {
+  const now = new Date('2026-11-15T12:00:00Z');
+  const ago = (d) => new Date(now - d * 86_400_000).toISOString();
+  assert.equal(status(a.judgeStaleBranches([], now)), 'pass');
+  assert.equal(status(a.judgeStaleBranches([ago(5), ago(30)], now)), 'pass', '30 days is still fine');
+  const stale = a.judgeStaleBranches([ago(5), ago(45), ago(31)], now);
+  assert.equal(stale.status, 'fail');
+  assert.match(stale.message, /^2 branches with no open pull request and no commits for more than 30 days; the oldest is 45 days old\./);
+  assert.match(a.judgeStaleBranches([ago(40)], now).message, /^1 branch .*Merge it, open a pull request, or delete it\.$/);
+});

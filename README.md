@@ -31,9 +31,9 @@ node bin/site-health.js run --config sites.yml             # every site in the l
 node bin/site-health.js repo path/to/site-repo             # repository checks
 ```
 
-Options: `--md file` and `--json file` save the report, `--sample N` sets how many sitemap pages to check (default 100), `--skip HTTPS-1,HTTPS-2` skips rules, `--exceptions file.yml` applies a site's exceptions, `--repo owner/name` also checks the site's repository for pull requests left open (UPKEEP-1), and `--enforce` exits with status 1 when a required check fails.
+Options: `--md file` and `--json file` save the report, `--sample N` sets how many sitemap pages to check (default 100), `--skip HTTPS-1,HTTPS-2` skips rules, `--exceptions file.yml` applies a site's exceptions, `--repo owner/name` also runs the upkeep checks on the site's repository (UPKEEP-1 to UPKEEP-3), and `--enforce` exits with status 1 when a required check fails.
 
-The checker sends a neutral User-Agent (`site-health-checker/1`), looks up DNS through Google Public DNS over HTTPS, and needs no credentials except `GITHUB_TOKEN` when it manages issues, and a token that can read pull requests for UPKEEP-1 on a private repository.
+The checker sends a neutral User-Agent (`site-health-checker/1`), looks up DNS through Google Public DNS over HTTPS, and needs no credentials except `GITHUB_TOKEN` when it manages issues, and a token that can read a private repository for the upkeep checks.
 
 ## Using it for your own sites
 
@@ -54,7 +54,7 @@ Some rules reflect this project's choices (for example, a DMARC policy of reject
 | `src/rules.js` | The rules, as data: id, title, level, version |
 | `src/live.js` | Live checks against a URL |
 | `src/repo.js` | Repository checks |
-| `src/pulls.js` | Pull requests left open (UPKEEP-1) |
+| `src/upkeep.js` | Repository upkeep: pull requests, Dependabot, branches (UPKEEP-1 to UPKEEP-3) |
 | `src/analyze.js` | Pure functions that judge headers, records, and pages |
 | `src/net.js` | HTTP, DNS over HTTPS, and certificate helpers |
 | `src/report.js` | Scoring, exceptions, and Markdown reports |

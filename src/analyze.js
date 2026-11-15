@@ -240,3 +240,54 @@ export function judgeOpenPulls(pulls, now = new Date(), maxDays = PR_MAX_DAYS) {
     message: `${count} ${stale === 1 ? 'One has' : `${stale} have`} been open longer than ${days(maxDays)}: merge, update or close ${stale === 1 ? 'it' : 'them'}.`,
   };
 }
+
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+const ageInDays = (iso, now) => Math.floor((now - new Date(iso)) / 86_400_000);
+
+/** UPKEEP-2: Dependabot should run at least this often (it is set to weekly). */
+export const DEPENDABOT_MAX_DAYS = 14;
+const FAILED = new Set(['failure', 'timed_out', 'startup_failure', 'action_required']);
+
+/**
+ * Judges Dependabot's update runs, newest first, from the GitHub Actions API. Each package
+ * ecosystem (npm_and_yarn, github_actions) has its own runs; the latest of each must not
+ * have failed, and the newest run overall must be recent.
+ * @param {Array<{ name: string, status: string, conclusion: string|null, created_at: string }>} runs
+ */
+export function judgeDependabotRuns(runs, now = new Date(), maxDays = DEPENDABOT_MAX_DAYS) {
+  if (!runs.length) {
+    return { status: 'fail', message: 'Dependabot has not run. Check that .github/dependabot.yml is valid and that Dependabot is turned on in the repository settings.' };
+  }
+  const newest = Math.min(...runs.map((r) => ageInDays(r.created_at, now)));
+  const latest = new Map();
+  for (const r of [...runs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))) {
+    if (r.status !== 'completed') continue;
+    const ecosystem = r.name.split(' ')[0];
+    if (!latest.has(ecosystem)) latest.set(ecosystem, r.conclusion);
+  }
+  const failed = [...latest].filter(([, c]) => FAILED.has(c)).map(([e]) => e);
+  const when = newest === 0 ? 'today' : `${plural(newest, 'day')} ago`;
+  if (newest > maxDays) return { status: 'fail', message: `Dependabot last ran ${when}. It should run every week.` };
+  if (failed.length) return { status: 'fail', message: `Dependabot last ran ${when}, but its latest ${failed.join(' and ')} update failed. See the repository's Dependabot logs.` };
+  return { status: 'pass', message: `Dependabot last ran ${when}; the latest update for each ecosystem (${[...latest.keys()].join(', ')}) succeeded.` };
+}
+
+/** UPKEEP-3: a branch with no open pull request and no commits for this long looks abandoned. */
+export const BRANCH_MAX_DAYS = 30;
+
+/**
+ * Judges branches other than the default branch that have no open pull request. Reports a
+ * count and the oldest age only, never branch names, because reports can be public.
+ * @param {string[]} lastCommitDates  ISO dates of each such branch's latest commit
+ */
+export function judgeStaleBranches(lastCommitDates, now = new Date(), maxDays = BRANCH_MAX_DAYS) {
+  const branches = (n) => `${n} ${n === 1 ? 'branch' : 'branches'}`;
+  const ages = lastCommitDates.map((d) => ageInDays(d, now));
+  const stale = ages.filter((d) => d > maxDays);
+  if (!ages.length) return { status: 'pass', message: 'No branches besides the default branch and those with open pull requests.' };
+  if (!stale.length) return { status: 'pass', message: `${branches(ages.length)} without an open pull request, none idle longer than ${maxDays} days.` };
+  return {
+    status: 'fail',
+    message: `${branches(stale.length)} with no open pull request and no commits for more than ${maxDays} days; the oldest is ${plural(Math.max(...stale), 'day')} old. Merge ${stale.length === 1 ? 'it' : 'them'}, open a pull request, or delete ${stale.length === 1 ? 'it' : 'them'}.`,
+  };
+}

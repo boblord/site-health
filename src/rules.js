@@ -56,6 +56,8 @@ export const RULES = [
 
   // Upkeep (checked with the live site when a repository is named for it)
   { id: 'UPKEEP-1', title: 'No pull request open longer than 14 days', level: 'recommended', since: 2, scope: 'upkeep' },
+  { id: 'UPKEEP-2', title: 'Dependabot runs every week and succeeds', level: 'recommended', since: 2, scope: 'upkeep' },
+  { id: 'UPKEEP-3', title: 'No branch idle for more than 30 days without a pull request', level: 'recommended', since: 2, scope: 'upkeep' },
 ];
 
 export const RULES_BY_ID = Object.fromEntries(RULES.map((r) => [r.id, r]));
