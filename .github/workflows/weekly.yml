@@ -25,7 +25,7 @@ jobs:
       - run: node bin/site-health.js run --config sites.yml --issues
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          # PR-1: which repository belongs to each site, as JSON {"host": "owner/name"},
+          # UPKEEP-1: which repository belongs to each site, as JSON {"host": "owner/name"},
           # kept in a repository variable so private repository names stay out of
           # this public repository. The secret is a fine-grained token with
           # read-only access to pull requests in those repositories.

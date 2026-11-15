@@ -218,7 +218,7 @@ export function sameUrl(a, b) {
   }
 }
 
-/** PR-1: pull requests still open after this many days need attention. */
+/** UPKEEP-1: pull requests still open after this many days need attention. */
 export const PR_MAX_DAYS = 14;
 
 /**

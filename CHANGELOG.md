@@ -2,7 +2,7 @@
 
 ## Added to version 2 (2026-11-15)
 
-- **PR-1** (recommended): no pull request in the site's repository open longer than 14 days. It runs only when a repository is named for the site, so sites without one see no change.
+- **UPKEEP-1** (recommended): no pull request in the site's repository open longer than 14 days. It runs only when a repository is named for the site, so sites without one see no change. First published as PR-1 and renamed the same day, because the id read like a pull request number.
 
 ## Standards version 2 (2026-11-15)
 

@@ -107,7 +107,7 @@ test('TXT unquoting', () => {
   assert.equal(unquoteTxt('v=spf1 -all'), 'v=spf1 -all');
 });
 
-test('PR-1 open pull requests', () => {
+test('UPKEEP-1 open pull requests', () => {
   const now = new Date('2026-11-15T12:00:00Z');
   const ago = (d) => ({ created_at: new Date(now - d * 86_400_000).toISOString(), title: 'Secret plans' });
   assert.equal(status(a.judgeOpenPulls([], now)), 'pass');

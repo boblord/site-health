@@ -1,4 +1,4 @@
-// PR-1: checks how long a site's repository has left pull requests open. Optional:
+// UPKEEP-1: checks how long a site's repository has left pull requests open. Optional:
 // it runs only when a repository is named for the site, so the checker still works
 // with no configuration or credentials.
 //
@@ -28,7 +28,7 @@ export function repoFor(site, env = process.env) {
  * @returns {Promise<{ id, status, message }>}
  */
 export async function checkPulls(repo, { now = new Date(), env = process.env } = {}) {
-  const id = 'PR-1';
+  const id = 'UPKEEP-1';
   const dedicated = env.SITE_HEALTH_PULLS_TOKEN;
   const token = dedicated || env.GITHUB_TOKEN;
   if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) return { id, status: 'error', message: 'The repository must be written as owner/name.' };
