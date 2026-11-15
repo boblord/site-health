@@ -19,7 +19,7 @@ The checker looks at a site from the outside, the way any visitor or scanner doe
 Requires Node.js 22.12 or newer.
 
 ```sh
-npx --yes github:boblord/site-health#v1 check https://example.org
+npx --yes github:boblord/site-health#v2 check https://example.org
 ```
 
 Or from a clone:

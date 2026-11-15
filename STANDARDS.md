@@ -1,4 +1,4 @@
-# Website standards, version 1
+# Website standards, version 2
 
 These are the standards every site checked by site-health is expected to meet. Each rule has an id (such as `HDR-2`) that appears in reports and issues, a level, what passing means, why it matters, how to fix it, and an authoritative source.
 
@@ -48,13 +48,16 @@ Recommended. Passes when the other form of the name (`www.` or the bare domain) 
 
 All header rules are checked on the home page response.
 
-### HDR-1 Strict-Transport-Security for at least a year
+### HDR-1 Strict-Transport-Security (ramping up to a year)
 
-Required. Passes when `Strict-Transport-Security` has `max-age` of at least 31536000 seconds.
+Required. Sites are ramping up HSTS, so what passes depends on the date:
 
-**Why:** tells browsers to use HTTPS for this site from then on, which defeats downgrade attacks on later visits.
+- **Until 2026-12-15:** `max-age` of at least 604800 seconds (one week). `includeSubDomains` is a warning: leave it out until the ramp-up ends.
+- **From 2026-12-15:** `max-age` of at least 31536000 seconds (one year). `includeSubDomains` is allowed.
 
-**Fix:** send `Strict-Transport-Security: max-age=31536000; includeSubDomains`. Add `includeSubDomains` only if every subdomain supports HTTPS. Do not add `preload` unless you mean it: removal from browser preload lists takes months.
+**Why:** tells browsers to use HTTPS for this site from then on, which defeats downgrade attacks on later visits. Browsers remember the setting for `max-age` seconds, so starting short means a mistake (a subdomain without HTTPS, a broken certificate setup) can only lock visitors out for a week while it is fixed.
+
+**Fix:** during the ramp-up, send `Strict-Transport-Security: max-age=604800`. After 2026-12-15, change it to `max-age=31536000`. Add `includeSubDomains` only if every subdomain supports HTTPS, and only on the bare domain, where it has an effect. Do not add `preload` unless you mean it: removal from browser preload lists takes months.
 
 **Source:** [MDN: Strict-Transport-Security](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security), [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/)
 
