@@ -68,4 +68,4 @@ This site follows the website standards in https://github.com/boblord/site-healt
 
 ## Moving to a new version of the standards
 
-Each site chooses its version through `site-health-ref` (default `v1`) in its workflow and the version named in its `CLAUDE.md`. When a new version is published, [CHANGELOG.md](../CHANGELOG.md) lists what changed. Update a site when convenient: change the version, run the checks, and fix or except what is new.
+Each site chooses its version in two places: the tag in its workflow's `uses:` line (`site-check.yml@v2`), and the version named in its `CLAUDE.md` (`site-health#v2`). Keep them the same. The tag for a version is moved forward with fixes and new recommended rules, but never to a change that makes a passing site fail; that is the next version. When a new version is published, [CHANGELOG.md](../CHANGELOG.md) lists what changed. Update a site when convenient: change both, run the checks, and fix or except what is new.

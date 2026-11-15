@@ -22,3 +22,11 @@ jobs:
       - run: npm test
       # The repository holds itself to its own repository rules.
       - run: node bin/site-health.js repo . --enforce
+      # Sites and the docs pin the tag for the current standards version, so it
+      # must exist. On main only: a pull request that starts a new version is
+      # merged first and tagged after.
+      - name: The tag for the current standards version exists
+        if: github.event_name == 'push'
+        run: |
+          TAG="v$(node --input-type=module -e "import { STANDARDS_VERSION } from './src/rules.js'; console.log(STANDARDS_VERSION)")"
+          git ls-remote --exit-code --tags origin "$TAG" > /dev/null || { echo "::error::Tag $TAG does not exist. Push it at this commit (see CLAUDE.md, Releasing)."; exit 1; }
